@@ -1,67 +1,114 @@
-
 #include <stdio.h>
 #include <GL/glut.h>
 #include "glm.h"
 GLMmodel * head = NULL;
 GLMmodel * body = NULL;
-GLMmodel * lefthand = NULL;
-GLMmodel * righthand = NULL;
-int show[4]={1,0,0,0};
-float teapotX = 0, teapotY = 0;
-FILE * fout = NULL;///step02-1
-FILE * fin = NULL;///step02-2
+GLMmodel * uparmR = NULL;
+GLMmodel * lowarmR = NULL;
+int show[4] = {1, 1, 1, 1};
+int ID=0;//0頭1身2上手臂3下手臂
 void keyboard(unsigned char key, int x, int y){
-    if(key=='0') show[0]= ! show [0];
-    if(key=='1') show[1]= ! show [1];
-    if(key=='2') show[2]= ! show [2];
-    if(key=='3') show[3]= ! show [3];
+    if(key=='0') ID=0;
+    if(key=='1') ID=1;
+    if(key=='2') ID=2;
+    if(key=='3') ID=3;
+    ///if(key=='0') show[0] = !show[0];
+    ///if(key=='1') show[1] = !show[1];
+    ///if(key=='2') show[2] = !show[2];
+    ///if(key=='3') show[3] = !show[3];
     glutPostRedisplay();
 }
+
+FILE * fout = NULL;
+FILE * fin = NULL;
+float teapotX=0, teapotY=0;
+float angle=0, angle2=0, angle3=0;
 void display()
 {
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    if(head==NULL){
-       head=glmReadOBJ("model/head.obj");
-       body=glmReadOBJ("model/body.obj");
-       lefthand=glmReadOBJ("model/lefthand.obj");
-       righthand=glmReadOBJ("model/righthand.obj");
-    }
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glPushMatrix();
-        glScalef(0.3,0.3,0.3);
+        glScalef(0.2, 0.2, 0.2);
+        if(body==NULL){
+            body = glmReadOBJ("model/body.obj");
+            head = glmReadOBJ("model/head.obj");
+            uparmR = glmReadOBJ("model/uparmR.obj");
+            lowarmR = glmReadOBJ("model/lowarmR.obj");
+
+            //glmUnitize(body);
+        }
+        if(ID==0) glColor3f(1,0,0);
+        else glColor3f(1,1,1);
+        if(show[0]) glmDraw(head, GLM_MATERIAL);
+
+        if(ID==1) glColor3f(1,0,0);
+        else glColor3f(1,1,1);
+        if(show[1]) glmDraw(body, GLM_MATERIAL);
         glPushMatrix();
-            glTranslatef(teapotX,teapotY,0);
-            if (show[0]) glmDraw(head, GLM_MATERIAL);
+            glTranslatef(teapotX, teapotY, 0);
+
+            if(ID==2) glColor3f(1,0,0);
+        else glColor3f(1,1,1);
+            if(show[2]) glmDraw(uparmR, GLM_MATERIAL);
         glPopMatrix();
-        if (show[1])glmDraw(body, GLM_MATERIAL);
-        if (show[2])glmDraw(lefthand, GLM_MATERIAL);
-        if (show[3])glmDraw(righthand, GLM_MATERIAL);
+
+        if(ID==3) glColor3f(1,0,0);
+        else glColor3f(1,1,1);
+        if(show[3]) glmDraw(lowarmR, GLM_MATERIAL);
     glPopMatrix();
+
     glutSwapBuffers();
+
 }
-int oldX=0, oldY=0;
-void mouse(int button, int state, int x, int y){
-    if(state==GLUT_DOWN){
-    oldX = x;
-    oldY = y;
-    }
-}
+int oldX = 0, oldY = 0;
 void motion(int x, int y){
     teapotX += (x - oldX)/150.0;
     teapotY -= (y - oldY)/150.0;
-    oldX=x;
-    oldY=y;
+    oldX = x;
+    oldY = y;
+    printf("glTranslatef(%f, %f, 0);\n", teapotX, teapotY);
     glutPostRedisplay();
 }
-int main(int argc, char** argv)
+void mouse(int button, int state, int x, int y)
 {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
-    glutCreateWindow("week13");
+    if(state==GLUT_DOWN){
+        teapotX = (x-150)/150.0;
+        teapotY = (150-y)/150.0;
+        if(fout==NULL) fout = fopen("file4.txt","w");
+        fprintf(fout, "%f %f\n", teapotX, teapotY);
+    }
+    display();
+}
+//void keyboard(unsigned char key,int x, int y)
+//{
+//    if(fin==NULL){
+//        fclose(fout);
+//        fin = fopen("file4.txt","r");
+//    }
+//    fscanf(fin, "%f %f", &teapotX, &teapotY);
+//    display();
+//}
+int main(int argc, char *argv[])//main()主函式 進階版
 
+{
+
+    glutInit(&argc,argv);//把參數送給glutInit初始化
+
+    glutInitDisplayMode(GLUT_DOUBLE|GLUT_DEPTH);//雙緩衝區+3D深度功能
+
+    glutCreateWindow("week13");//開GLUT視窗
+
+
+
+    glutDisplayFunc(display);//顯示用的函式
+
+    glutMouseFunc(mouse);
     glutMotionFunc(motion);
-    glutDisplayFunc(display);
-    glutKeyboardFunc(keyboard); ///step02-2
-    glutMouseFunc(mouse); ///step02-1
+    glutKeyboardFunc(keyboard);
+
+
 
     glutMainLoop();
+
 }
