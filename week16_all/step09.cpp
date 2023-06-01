@@ -6,7 +6,7 @@
 GLMmodel * head = NULL;
 GLMmodel * body = NULL; ///GLMmodel * gundam = NULL;
 
-float teapotX = 0, teapotY = 0, angle = 0, angle2 = 0, oldX = 0, oldY = 0;
+float teapotX = 0, teapotY = 0, angle = 0, oldX = 0, oldY = 0;
 int myTexture(char * filename)
 {
     IplImage * img = cvLoadImage(filename); ///OpenCVÅª¹Ï
@@ -30,7 +30,6 @@ void motion(int x, int y) {
     teapotX += (x - oldX) / 150.0 * 10; ///teapotX = (x-150)/150.0;
     teapotY += (oldY - y) / 150.0 * 10; ///teapotY = (150-y)/150.0;
     angle += x - oldX;
-    angle2 += oldY - y;
     oldX = x;
     oldY = y;
     glutPostRedisplay();
@@ -48,10 +47,7 @@ void display() {
             glmDraw(body, GLM_MATERIAL|GLM_TEXTURE);///glmDraw(gundam, GLM_MATERIAL|GLM_TEXTURE);
 
             glPushMatrix();
-                glTranslatef(-0.00, +22.53, 0 );
-                glRotatef(angle, 0, 1, 0);
-                glRotatef(angle2, 1, 0, 0);
-                glTranslatef( 0.00, -22.53, 0 );///glTranslatef(teapotX, teapotY, 0);
+                glTranslatef(teapotX, teapotY, 0);
                 glmDraw(head, GLM_MATERIAL|GLM_TEXTURE);
             glPopMatrix();
         glPopMatrix();
