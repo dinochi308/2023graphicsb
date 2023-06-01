@@ -1,5 +1,6 @@
 # depslib dependency file v1.0
-1685599935 source:c:\users\administrator\desktop\2023graphicsb\week16_all\main.cpp
+1685601157 source:c:\users\administrator\desktop\2023graphicsb\week16_all\main.cpp
+	<stdio.h>
 	<GL/glut.h>
 
 1685598381 c:\users\administrator\desktop\2023graphicsb\final_project\freeglut\include\gl\glut.h
